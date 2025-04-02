@@ -10,10 +10,16 @@
 Controller::Controller(QObject *parent)
     : QObject{parent}
 {
-    if(getTimeStampDateTime()>isTimerAlreadyThere()&&isTimerAlreadyThere().isValid()){
+    auto boot_time=getBootDateTime();
+    auto saved_scheduled_time=getTimeStampDateTime();
+    if(boot_time.isValid()&&saved_scheduled_time.isValid()&&saved_scheduled_time>boot_time){
         setCanClear(true);
+        setMsg("There is already a Timer Scheduled for "+saved_scheduled_time.toString());
+        qDebug()<<saved_scheduled_time.toString();
     }else{
         setCanClear(false);
+        qDebug()<<"Noope";
+        setMsg("Copyright© 2025 Vishal Ahirwar.All rights reserved.");
     }
     setDuration(45);
 }
@@ -21,7 +27,7 @@ Controller::Controller(QObject *parent)
 void Controller::setTimer()
 {
     if (m_duration < 15) {
-        emit errorOccured("Warning: Timer is set for less than 15 minutes");
+        setMsg("Warning: Timer is set for less than 15 minutes");
     }
 
     QTimer::singleShot(500, [this]() {
@@ -73,6 +79,7 @@ void Controller::clear()
     } else {
         qDebug() << process->exitCode() << "Shutdown canceled successfully";
         setCanClear(!m_can_clear);
+
     }
     process->deleteLater(); // Cleanup
 }
@@ -102,6 +109,8 @@ void Controller::setCanClear(bool newCan_clear)
         return;
     m_can_clear = newCan_clear;
     if(!m_can_clear){
+        qDebug()<<"Noope";
+        setMsg("Copyright© 2025 Vishal Ahirwar.All rights reserved.");
         auto file=QFile("timer.txt");
         if(file.exists())file.remove();
         qDebug()<<"removing from "<<__func__;
@@ -109,7 +118,7 @@ void Controller::setCanClear(bool newCan_clear)
     emit canClearChanged();
 }
 
-QDateTime Controller::isTimerAlreadyThere()
+QDateTime Controller::getBootDateTime()
 {
     qint64 bootTimeStamp = 0;
 
@@ -146,11 +155,13 @@ void Controller::saveTimeStampDateTime()
     QFile file("timer.txt");
     if(file.open(QIODevice::WriteOnly|QIODevice::Text)){
         QString scheduledDateTime = QDateTime::currentDateTime().addSecs(duration()*60).toString("yyyy-MM-dd HH:mm:ss");
+        setMsg("Timer Scheduled for "+scheduledDateTime);
         scheduledDateTime= "Shutdown Scheduled for="+scheduledDateTime;
         QTextStream out(&file);
         out<<scheduledDateTime;
         file.close();
         qDebug()<<scheduledDateTime;
+
     }
 
 }
@@ -164,4 +175,17 @@ QDateTime Controller::getTimeStampDateTime() const
         return QDateTime::fromString(save_string,"yyyy-MM-dd HH:mm:ss");
     }
     return QDateTime();
+}
+
+QString Controller::msg() const
+{
+    return m_msg;
+}
+
+void Controller::setMsg(const QString &newMsg)
+{
+    if (m_msg == newMsg)
+        return;
+    m_msg = newMsg;
+    emit msgChanged();
 }

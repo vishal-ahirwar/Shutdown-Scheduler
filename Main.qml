@@ -9,9 +9,6 @@ Window {
     flags: Qt.FramelessWindowHint
     Connections{
         target: controller
-        onErrorOccured:function(errorString){
-            errorText.text=errorString
-        }
         onDurationChanged:function(value){
             spinBoxH.value=value
         }
@@ -52,7 +49,7 @@ Window {
 
         Text {
             id: errorText
-            text:"Copyright© 2025 Vishal Ahirwar.All rights reserved."
+            text:controller.msg
             anchors{
                 bottom:parent.bottom
                 margins: 55
