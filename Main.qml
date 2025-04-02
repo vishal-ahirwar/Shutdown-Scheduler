@@ -28,7 +28,7 @@ Window {
                 id:title
                 text:qsTr("Shutdown Scheduler")
                 font.pixelSize: 25
-                color: "#252422"
+                color: "#686963"
                 font.bold: true
                 anchors{
                     top:parent.top
@@ -77,16 +77,28 @@ Window {
 
             CustomButton{
                 id:btnSetTimer
-                text: "Set Timer"
+                text: "Schedule Shutdown"
+                 width: 220
                 visible: !controller.can_clear
                 enabled: !controller.can_clear
                 onClicked: {
-                    controller.setTimer()
+                    controller.shutdown()
+                }
+            }
+            CustomButton{
+                id:btnReboot
+                text:"Schedule Reboot"
+                visible: !controller.can_clear
+                enabled: !controller.can_clear
+                width: 220
+                onClicked: {
+                    controller.reboot()
                 }
             }
             CustomButton{
                 id:btnCancel
                 text:"Clear Timer"
+                 width: 220
                 visible: controller.can_clear
                 enabled: controller.can_clear
                 onClicked: {
@@ -96,6 +108,7 @@ Window {
             CustomButton{
                 id:btnClose
                 text: "Close"
+                 width: 220
                 onClicked: {
                     controller.close();
                 }
@@ -103,10 +116,12 @@ Window {
             CustomButton{
                 id:btnAbout
                 text:"About"
+                 width: 220
                 onClicked: {
                     aboutPopUp.open()
                 }
             }
+
         }
 
     }

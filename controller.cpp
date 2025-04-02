@@ -10,12 +10,19 @@
 Controller::Controller(QObject *parent)
     : QObject{parent}
 {
+    ScheduleType type;
     auto boot_time=getBootDateTime();
-    auto saved_scheduled_time=getTimeStampDateTime();
+    auto saved_scheduled_time=getTimeStampDateTime(type);
     if(boot_time.isValid()&&saved_scheduled_time.isValid()&&saved_scheduled_time>boot_time){
         setCanClear(true);
-        setMsg("There is already a Timer Scheduled for "+saved_scheduled_time.toString());
-        qDebug()<<saved_scheduled_time.toString();
+        switch (type) {
+        case ScheduleType::REBOOT:
+            setMsg("Reboot Timer Scheduled for "+saved_scheduled_time.toString());
+            break;
+        case ScheduleType::SHUTDOWN:
+            setMsg("Shutdown Timer Scheduled for "+saved_scheduled_time.toString());
+            break;
+    }
     }else{
         setCanClear(false);
         qDebug()<<"Noope";
@@ -24,7 +31,7 @@ Controller::Controller(QObject *parent)
     setDuration(45);
 }
 
-void Controller::setTimer()
+void Controller::shutdown()
 {
     if (m_duration < 15) {
         setMsg("Warning: Timer is set for less than 15 minutes");
@@ -46,7 +53,7 @@ void Controller::setTimer()
         } else {
             qDebug() << process->exitCode() << "Shutdown timer set successfully";
             setCanClear(!m_can_clear);
-            saveTimeStampDateTime();
+            saveTimeStampDateTime(ScheduleType::SHUTDOWN);
         }
         process->deleteLater(); // Clean up the process
     });
@@ -84,6 +91,34 @@ void Controller::clear()
     process->deleteLater(); // Cleanup
 }
 
+void Controller::reboot()
+{
+    if (m_duration < 15) {
+        setMsg("Warning: Timer is set for less than 15 minutes");
+    }
+
+    QTimer::singleShot(500, [this]() {
+        auto* process = new QProcess(this); // Prevent premature destruction
+
+#ifdef Q_OS_WIN
+        process->start("shutdown", QStringList() << "/r" << "/t" << QString::number(m_duration * 60));
+#elif defined(Q_OS_LINUX) || defined(Q_OS_UNIX)
+        process->start("shutdown", QStringList() << "-r" << "+" << QString::number(m_duration));
+#elif defined(Q_OS_MAC)
+        process->start("sudo", QStringList() << "shutdown" << "-r" << "+" << QString::number(m_duration));
+#endif
+
+        if (!process->waitForFinished()) {
+            qDebug() << process->exitCode() << "Failed to set reboot timer";
+        } else {
+            qDebug() << process->exitCode() << "Reboot timer set successfully";
+            setCanClear(!m_can_clear);
+            saveTimeStampDateTime(ScheduleType::REBOOT);
+        }
+        process->deleteLater(); // Clean up the process
+    });
+}
+
 qint64 Controller::duration() const
 {
     return m_duration;
@@ -94,7 +129,6 @@ void Controller::setDuration(qint64 newDuration)
     if (m_duration == newDuration)
         return;
     m_duration = newDuration;
-    qDebug()<<"duration changed to "<<m_duration;
     emit durationChanged(m_duration);
 }
 
@@ -150,13 +184,22 @@ QDateTime Controller::getBootDateTime()
     return QDateTime();
 }
 
-void Controller::saveTimeStampDateTime()
+void Controller::saveTimeStampDateTime(ScheduleType type)
 {
     QFile file("timer.txt");
     if(file.open(QIODevice::WriteOnly|QIODevice::Text)){
         QString scheduledDateTime = QDateTime::currentDateTime().addSecs(duration()*60).toString("yyyy-MM-dd HH:mm:ss");
-        setMsg("Timer Scheduled for "+scheduledDateTime);
-        scheduledDateTime= "Shutdown Scheduled for="+scheduledDateTime;
+        switch(type){
+        case ScheduleType::SHUTDOWN:{
+            scheduledDateTime= "Shutdown Scheduled for="+scheduledDateTime;
+            break;
+        };
+        case ScheduleType::REBOOT:{
+            scheduledDateTime= "Reboot Scheduled for="+scheduledDateTime;
+            break;
+        };
+        }
+        setMsg(scheduledDateTime);
         QTextStream out(&file);
         out<<scheduledDateTime;
         file.close();
@@ -166,13 +209,15 @@ void Controller::saveTimeStampDateTime()
 
 }
 
-QDateTime Controller::getTimeStampDateTime() const
+QDateTime Controller::getTimeStampDateTime(ScheduleType&type) const
 {
     QFile file("timer.txt");
     if(file.open(QIODevice::ReadOnly|QIODevice::Text)){
         auto data= file.readAll();
-        auto save_string=data.split('=').last().trimmed();
-        return QDateTime::fromString(save_string,"yyyy-MM-dd HH:mm:ss");
+        auto save_string=data.split('=');
+        if(save_string.first().split(' ').first().compare("reboot",Qt::CaseInsensitive)==0)type=ScheduleType::REBOOT;
+        else type=ScheduleType::SHUTDOWN;
+        return QDateTime::fromString(save_string.last().trimmed(),"yyyy-MM-dd HH:mm:ss");
     }
     return QDateTime();
 }

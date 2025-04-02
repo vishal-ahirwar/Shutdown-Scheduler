@@ -1,68 +1,93 @@
-import QtQuick
-import QtQuick.Controls
+import QtQuick 2.15
+import QtQuick.Controls 2.15
 
 Popup {
     id: aboutPopup
+    width: parent.width
+    height: parent.height
     modal: true
     focus: true
-    width: parent.width
-    height:parent.height
     closePolicy: Popup.CloseOnEscape | Popup.CloseOnPressOutside
 
     background: Rectangle {
-        color: "white"
+        color: "#FAFAFA"
         radius: 18
     }
 
-    contentItem: Flickable {
-        topMargin: 75
-        clip: true
+    Column {
         anchors.fill: parent
-        contentWidth: parent.width
-        contentHeight: columnLayout.height
-        flickableDirection: Flickable.Vertical
+        anchors.margins: 16
+        anchors.topMargin: 55
+        spacing: 10
 
-        ScrollBar.vertical: ScrollBar {
-            policy: ScrollBar.AlwaysOff
+        // Title
+        Text {
+            text: "About Shutdown Scheduler"
+            font.bold: true
+            font.pointSize: 18
+            color: "#BBBBBB"
+            horizontalAlignment: Text.AlignHCenter
+            width: parent.width
+        }
+        ScrollView {
+            id: info
+            width: parent.width
+            height: parent.height * 0.75
+            clip: true
+
+            contentWidth: parent.width  // Ensures ScrollView content spans full width
+
+            Column {
+                width: parent.width * 0.9  // Make it take most of the width
+                spacing: 10
+                anchors.horizontalCenter: parent.horizontalCenter  // Centers Column inside ScrollView
+
+                Text {
+                    text: "Shutdown Scheduler is a lightweight and efficient tool that allows users to schedule system shutdowns, restarts, or hibernation with ease."
+                    wrapMode: Text.WordWrap
+                    width: parent.width
+                    font.pointSize: 12
+                    color: "#CCCCCC"
+                }
+
+                Text {
+                    text: "Features:\n• Schedule shutdown, restart, hibernate, or log off operations.\n• User-friendly interface.\n• Cross-platform support.\n• Open-source and customizable."
+                    wrapMode: Text.WordWrap
+                    width: parent.width
+                    font.pointSize: 12
+                    color: "#AAAAAA"
+                }
+
+                Text {
+                    text: "License: MIT License"
+                    font.italic: true
+                    font.pointSize: 12
+                    color: "#BBBBBB"
+                }
+
+                Text {
+                    text: "© 2024 Vishal Ahirwar. All rights reserved."
+                    font.pointSize: 10
+                    color: "#888888"
+                }
+            }
         }
 
-        Column {
-            id: columnLayout
-            width: parent.width - 20
-            spacing: 35
-            anchors.centerIn: parent
-            Text {
-                text: qsTr("Shutdown Scheduler")
-                font.bold: true
-                font.pointSize: 14
-                color: "black"
-                horizontalAlignment: Text.AlignHCenter
-                width: parent.width
-                wrapMode: Text.WrapAnywhere
+
+        // Buttons
+        Row {
+            spacing: 10
+            anchors.horizontalCenter: parent.horizontalCenter
+
+            CustomButton {
+                width: 220
+                text: "GitHub Repository"
+                onClicked: Qt.openUrlExternally("https://github.com/vishal-ahirwar/Shutdown-Scheduler")
             }
 
-            Text {
-                text: qsTr("Shutdown Scheduler is a lightweight and efficient application designed to help users ") +
-                      qsTr("schedule system shutdown, restart, hibernate, or sleep operations with ease. Built using ") +
-                      qsTr("C++ and Qt6, this application ensures a smooth and responsive user experience while ") +
-                      qsTr("maintaining low system resource usage.\n\n") +
-
-                      qsTr("With a simple and intuitive interface, Shutdown Scheduler allows users to set automatic shutdown ") +
-                      qsTr("times, helping save power, automate tasks, and manage system uptime effectively. Whether you need ") +
-                      qsTr("to turn off your computer after a long download, restart after an update, or hibernate at a ") +
-                      qsTr("specific time, this tool provides a seamless solution.")
-                font.pointSize: 12
-                color: "#252422"
-                horizontalAlignment: Text.AlignHCenter
-                width: parent.width
-                wrapMode: Text.WordWrap
-            }
-            CustomButton{
-                anchors.horizontalCenter: parent.horizontalCenter
+            CustomButton {
                 text: "Close"
-                onClicked: {
-                    close()
-                }
+                onClicked:close()
             }
         }
     }

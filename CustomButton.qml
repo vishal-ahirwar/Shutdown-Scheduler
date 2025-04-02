@@ -2,8 +2,8 @@ import QtQuick
 import QtQuick.Controls
 
 Button{
-    width: 160
-    height:55
+    implicitWidth: 160
+    implicitHeight:55
     background: Rectangle{
         radius: 16
         color: "#E3F2FD"

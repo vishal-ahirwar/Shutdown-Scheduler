@@ -2,6 +2,10 @@
 #define CONTROLLER_H
 
 #include <QObject>
+enum class ScheduleType{
+    SHUTDOWN,
+    REBOOT
+};
 
 class Controller : public QObject
 {
@@ -11,10 +15,11 @@ class Controller : public QObject
     Q_PROPERTY(QString msg READ msg WRITE setMsg NOTIFY msgChanged FINAL)
 public:
     explicit Controller(QObject *parent = nullptr);
-    Q_INVOKABLE void setTimer();
+    Q_INVOKABLE void shutdown();
     Q_INVOKABLE void close();
     Q_INVOKABLE void about();
     Q_INVOKABLE void clear();
+    Q_INVOKABLE void reboot();
     qint64 duration() const;
     void setDuration(qint64 newDuration);
     bool canClear() const;
@@ -24,8 +29,8 @@ public:
 
 private:
     QDateTime getBootDateTime();
-    void saveTimeStampDateTime();
-    QDateTime getTimeStampDateTime()const;
+    void saveTimeStampDateTime(ScheduleType type);
+    QDateTime getTimeStampDateTime(ScheduleType&type)const;
 signals:
     void durationChanged(qint64 duration);
     void canClearChanged();
