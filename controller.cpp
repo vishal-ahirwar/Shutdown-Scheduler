@@ -10,10 +10,8 @@
 Controller::Controller(QObject *parent)
     : QObject{parent}
 {
-    if(getTimeStampDateTime()>isTimerAlreadyThere()){
+    if(getTimeStampDateTime()>isTimerAlreadyThere()&&isTimerAlreadyThere().isValid()){
         setCanClear(true);
-        auto file=QFile("timer.txt");
-        if(file.exists())file.remove();
     }else{
         setCanClear(false);
     }
@@ -103,9 +101,10 @@ void Controller::setCanClear(bool newCan_clear)
     if (m_can_clear == newCan_clear)
         return;
     m_can_clear = newCan_clear;
-    if(m_can_clear){
+    if(!m_can_clear){
         auto file=QFile("timer.txt");
         if(file.exists())file.remove();
+        qDebug()<<"removing from "<<__func__;
     }
     emit canClearChanged();
 }
