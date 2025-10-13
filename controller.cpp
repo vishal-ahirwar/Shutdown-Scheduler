@@ -17,16 +17,16 @@ Controller::Controller(QObject *parent)
         setCanClear(true);
         switch (type) {
         case ScheduleType::REBOOT:
-            setMsg("Reboot Timer Scheduled for "+saved_scheduled_time.toString());
+            setMsg("Your PC is Already Scheduled to Restart at "+saved_scheduled_time.toString());
             break;
         case ScheduleType::SHUTDOWN:
-            setMsg("Shutdown Timer Scheduled for "+saved_scheduled_time.toString());
+            setMsg("Your PC is Already Scheduled to Shutdown at"+saved_scheduled_time.toString());
             break;
     }
     }else{
         setCanClear(false);
         qDebug()<<"Noope";
-        setMsg("Copyright© 2025 Vishal Ahirwar.All rights reserved.");
+        setMsg("By Vishal Ahirwar");
     }
     setDuration(45);
 }

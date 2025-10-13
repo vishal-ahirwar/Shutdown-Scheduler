@@ -3,10 +3,10 @@ import QtQuick.Controls
 
 Button{
     implicitWidth: 160
-    implicitHeight:55
+    implicitHeight:48
     background: Rectangle{
-        radius: 16
-        color: "#E3F2FD"
+        radius: 18
+        color: "#00AEFF"
         width: parent.width
         height:parent.height
     }
@@ -14,7 +14,7 @@ Button{
         anchors.fill: parent
         text: parent.text
         font.pixelSize: 22
-        color: "#686963"
+        color: "#FFFFFF"
         horizontalAlignment: Text.AlignHCenter
         verticalAlignment: Text.AlignVCenter
     }

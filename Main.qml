@@ -1,8 +1,8 @@
 import QtQuick
 import QtQuick.Controls
 Window {
-    height: 640
-    width: 480
+    height: 507
+    width: 328
     visible: true
     title: qsTr("Shutdown Scheduler")
     color: "transparent"
@@ -19,16 +19,16 @@ Window {
 
     Rectangle
     {
-        color: "#FAFAFA"
+        color: "#111111"
         width: parent.width
         height:parent.height
         radius: 18
         Rectangle{
             Text{
                 id:title
-                text:qsTr("Shutdown Scheduler")
+                text:qsTr("As Timer")
                 font.pixelSize: 25
-                color: "#686963"
+                color: "#FFFFFF"
                 font.bold: true
                 anchors{
                     top:parent.top
@@ -38,7 +38,7 @@ Window {
                 horizontalAlignment: Text.AlignHCenter
                 wrapMode: Text.WordWrap
             }
-            color: "#F7F9F9"
+            color: "#111111"
             width: parent.width
             height: parent.height*0.18
             topLeftRadius: parent.radius
@@ -58,7 +58,7 @@ Window {
             horizontalAlignment: Text.AlignHCenter
             font.pixelSize: 16
             font.bold: false
-            color:"#686963"
+            color:"#414141"
             wrapMode: Text.WrapAnywhere
         }
         Column
@@ -77,8 +77,8 @@ Window {
 
             CustomButton{
                 id:btnSetTimer
-                text: "Schedule Shutdown"
-                 width: 220
+                text: "Shutdown"
+                 width: 183
                 visible: !controller.can_clear
                 enabled: !controller.can_clear
                 onClicked: {
@@ -87,10 +87,10 @@ Window {
             }
             CustomButton{
                 id:btnReboot
-                text:"Schedule Reboot"
+                text:"Reboot"
                 visible: !controller.can_clear
                 enabled: !controller.can_clear
-                width: 220
+                width: 183
                 onClicked: {
                     controller.reboot()
                 }
@@ -98,7 +98,7 @@ Window {
             CustomButton{
                 id:btnCancel
                 text:"Clear Timer"
-                 width: 220
+                 width: 183
                 visible: controller.can_clear
                 enabled: controller.can_clear
                 onClicked: {
@@ -108,7 +108,7 @@ Window {
             CustomButton{
                 id:btnClose
                 text: "Close"
-                 width: 220
+                 width: 183
                 onClicked: {
                     controller.close();
                 }
@@ -116,7 +116,7 @@ Window {
             CustomButton{
                 id:btnAbout
                 text:"About"
-                 width: 220
+                 width: 183
                 onClicked: {
                     aboutPopUp.open()
                 }

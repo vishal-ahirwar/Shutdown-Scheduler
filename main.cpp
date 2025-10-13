@@ -14,6 +14,6 @@ int main(int argc, char *argv[])
         &app,
         []() { QCoreApplication::exit(-1); },
         Qt::QueuedConnection);
-    engine.loadFromModule("Ss", "Main");
+    engine.loadFromModule("AsTimer", "Main");
     return app.exec();
 }
